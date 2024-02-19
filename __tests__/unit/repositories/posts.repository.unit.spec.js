@@ -17,16 +17,48 @@ let mockPrisma = {
 let postsRepository = new PostsRepository(mockPrisma);
 
 describe("Posts Repository Unit Test", () => {
-  // 각 test가 실행되기 전에 실행됩니다.
   beforeEach(() => {
     jest.resetAllMocks(); // 모든 Mock을 초기화합니다.
   });
 
   test("findAllPosts Method", async () => {
-    // TODO: 여기에 코드를 작성해야합니다.
+    const mockReturn = "findMany String";
+    mockPrisma.posts.findMany.mockReturnValue(mockReturn);
+
+    const posts = await postsRepository.findAllPosts();
+
+    expect(posts).toBe(mockReturn);
+
+    expect(postsRepository.prisma.posts.findMany).toHaveBeenCalledTimes(1);
   });
 
   test("createPost Method", async () => {
-    // TODO: 여기에 코드를 작성해야합니다.
+    const mockReturn = "create Post Return String";
+    mockPrisma.posts.create.mockReturnValue(mockReturn);
+
+    const createPostParams = {
+      nickname: "createPostNickname",
+      password: "createPostPassword",
+      title: "createPostTitle",
+      content: "createPostContent",
+    };
+    const createPostData = await postsRepository.createPost(
+      createPostParams.nickname,
+      createPostParams.password,
+      createPostParams.title,
+      createPostParams.content
+    );
+    expect(createPostData).toEqual(mockReturn);
+
+    expect(mockPrisma.posts.create).toHaveBeenCalledTimes(1);
+
+    expect(mockPrisma.posts.create).toHaveBeenCalledWith({
+      data: {
+        nickname: createPostParams.nickname,
+        password: createPostParams.password,
+        title: createPostParams.title,
+        content: createPostParams.content,
+      },
+    });
   });
 });
